@@ -32,4 +32,10 @@ func main() {
 
 	//5.查询数据-初级查询
 	mysql.SimpleSelect(db)
+
+	//6.查询数据-条件查询
+	mysql.WhereSelect(db)
+
+	//7.查询数据-特殊查询
+	mysql.SpecialSelect(db)
 }
