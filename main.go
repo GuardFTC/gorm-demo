@@ -44,4 +44,11 @@ func main() {
 	if err := mysql.SpecialSelect(db); err != nil {
 		log.Fatal(err)
 	}
+
+	//5.开启事务-更新数据
+	if err := db.Transaction(func(tx *gorm.DB) error {
+		return mysql.Update(tx)
+	}); err != nil {
+		log.Fatal(err)
+	}
 }
