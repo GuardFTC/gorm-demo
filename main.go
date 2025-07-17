@@ -31,11 +31,17 @@ func main() {
 	}
 
 	//5.查询数据-初级查询
-	mysql.SimpleSelect(db)
+	if err := mysql.SimpleSelect(db); err != nil {
+		log.Fatal(err)
+	}
 
 	//6.查询数据-条件查询
-	mysql.WhereSelect(db)
+	if err := mysql.WhereSelect(db); err != nil {
+		log.Fatal(err)
+	}
 
 	//7.查询数据-特殊查询
-	mysql.SpecialSelect(db)
+	if err := mysql.SpecialSelect(db); err != nil {
+		log.Fatal(err)
+	}
 }
