@@ -20,7 +20,9 @@ func Update(db *gorm.DB) error {
 	//更新
 	student.Age = 66
 	student.UpdateTime = time.Now().Local()
-	db.Save(&student)
+	if tx := db.Save(&student); tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
 
 	//查询验证
 	updateStudent := &mysql.Student{ID: student.ID}
@@ -29,7 +31,9 @@ func Update(db *gorm.DB) error {
 
 	//3.单个更新单列
 	//更新
-	db.Model(&student).Update("email", "xialuo_update@xltfn.cn")
+	if tx := db.Model(&student).Update("email", "xialuo_update@xltfn.cn"); tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
 
 	//查询验证
 	db.Select("id", "age", "email", "update_time").First(&updateStudent)
@@ -37,7 +41,9 @@ func Update(db *gorm.DB) error {
 
 	//4.批量更新单列
 	//更新
-	db.Model(&mysql.Student{}).Where("age > ?", 18).Update("create_time", time.Now().Local())
+	if tx := db.Model(&mysql.Student{}).Where("age > ?", 18).Update("create_time", time.Now().Local()); tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
 
 	//查询验证
 	var students []*mysql.Student
@@ -49,7 +55,9 @@ func Update(db *gorm.DB) error {
 
 	//5.批量更新多列
 	//更新
-	db.Model(&mysql.Student{}).Where("age <= ?", 18).Updates(&mysql.Student{UpdateTime: time.Now().Local(), Class: 11})
+	if tx := db.Model(&mysql.Student{}).Where("age <= ?", 18).Updates(&mysql.Student{UpdateTime: time.Now().Local(), Class: 11}); tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
 
 	//查询验证
 	db.Select("id", "update_time", "class").Where("age <= ?", 18).Find(&students)
@@ -60,7 +68,9 @@ func Update(db *gorm.DB) error {
 
 	//6.不带条件的全部更新
 	//更新
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Model(&mysql.Teacher{}).Update("create_time", time.Now().Local())
+	if tx := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Model(&mysql.Teacher{}).Update("create_time", time.Now().Local()); tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
 
 	//查询验证
 	var teachers []*mysql.Teacher
