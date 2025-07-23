@@ -17,7 +17,10 @@ func main() {
 	//2.gorm测试
 	//gormTest(db)
 
-	//3.gen测试
+	//3.gen生成器测试
+	//genGeneratorTest(db)
+
+	//4.gen测试
 	genTest(db)
 }
 
@@ -49,15 +52,23 @@ func gormTest(db *gorm.DB) {
 	common.CheckGormTransactionError(db, mysql.Delete)
 }
 
+// gen生成器测试
+func genGeneratorTest(db *gorm.DB) {
+	_gen.Generate(db)
+}
+
 // gen测试
 func genTest(db *gorm.DB) {
 
-	//1.自动生成器
-	//_gen.Generate(db)
+	//1.删除表
+	common.CheckError(mysql.DropTable(db))
 
-	//2.初始化全局入口
+	//2.创建表
+	common.CheckError(mysql.CreateTable(db))
+
+	//3.初始化全局入口
 	q := query.Use(db)
 
-	//3.保存数据
+	//4.保存数据
 	common.CheckGenTransactionError(q, _gen.Insert)
 }
