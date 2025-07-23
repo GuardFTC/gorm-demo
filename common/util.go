@@ -2,13 +2,20 @@
 package common
 
 import (
+	"gorm-demo/_gen/query"
 	"log"
 
 	"gorm.io/gorm"
 )
 
-func CheckTransactionError(db *gorm.DB, fc func(tx *gorm.DB) error) {
+// CheckGormTransactionError 事务错误检查
+func CheckGormTransactionError(db *gorm.DB, fc func(tx *gorm.DB) error) {
 	CheckError(db.Transaction(fc))
+}
+
+// CheckGenTransactionError 事务错误检查
+func CheckGenTransactionError(query *query.Query, fc func(tx *query.Query) error) {
+	CheckError(query.Transaction(fc))
 }
 
 // CheckError 错误检查
