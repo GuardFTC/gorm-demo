@@ -77,4 +77,7 @@ func genTest(db *gorm.DB) {
 
 	//6.更新数据
 	common.CheckGenTransactionError(q, _gen.Update)
+
+	//7.删除数据
+	common.CheckGenTransactionError(q, _gen.Delete)
 }
