@@ -10,7 +10,7 @@ import (
 func Insert(tx *query.Query) error {
 
 	//1.单个数据保存
-	student := &model.Student{Name: "夏洛", Email: "xialuo@xhs.com", Age: 18, Grade: 1, Class: 1}
+	student := &model.Student{Name: "夏洛", Email: "xialuo@xhs.com", Age: 18, Grade: 3, Class: 3}
 	if err := tx.Student.Create(student); err != nil {
 		return err
 	}
