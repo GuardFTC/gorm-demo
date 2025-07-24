@@ -42,66 +42,15 @@ type ageGroup struct {
 	Count int32
 }
 
-// 特殊查询
-func specialSelect(q *query.Query) error {
-
-	//1.排序查询
-	if find, err := q.Student.Order(q.Student.Age.Desc(), q.Student.ID.Asc()).Find(); err != nil {
-		return err
-	} else {
-		log.Printf("get group by data:")
-		for _, group := range find {
-			log.Printf("group=[%+v]", group)
-		}
-	}
-
-	//2.偏移量查询
-	if find, err := q.Student.Order(q.Student.Age.Desc(), q.Student.ID.Asc()).Offset(2).Limit(2).Find(); err != nil {
-		return err
-	} else {
-		log.Println("get offset and limit data:")
-		for _, limitStudent := range find {
-			log.Printf("limitStudent=[%+v]", limitStudent)
-		}
-	}
-
-	//3.Group By Having查询
-	if rows, err := q.Student.
-		Select(q.Student.Age, q.Student.Age.Count().As("count")).
-		Group(q.Student.Age).
-		Having(q.Student.Age.Count().Gt(1)).
-		Rows(); err != nil {
-		return err
-	} else {
-		log.Println("get group by data:")
-		for rows.Next() {
-			var groupResult ageGroup
-			if err := rows.Scan(&groupResult.Age, &groupResult.Count); err != nil {
-				return err
-			}
-			log.Printf("group=[%+v]", groupResult)
-		}
-	}
-
-	//4.Join查询
-	s := q.Student.As("s")
-	tas := q.TeacherAndStudent.As("tas")
-	if find, err := s.
-		Select(s.ID, s.Name, s.Age, s.Grade, s.Class, s.Email, s.CreateTime, s.UpdateTime).
-		Join(tas, s.ID.EqCol(tas.StudentID)).
-		Where(tas.TeacherID.Eq(1)).
-		Order(s.ID.Desc()).
-		Find(); err != nil {
-		return err
-	} else {
-		log.Println("get join data:")
-		for _, joinStudent := range find {
-			log.Printf("joinStudent=[%+v]", joinStudent)
-		}
-	}
-
-	//默认返回
-	return nil
+// studentVo接收结果结构体
+type studentVo struct {
+	ID          int32  `gorm:"column:id;"`           // 主键ID
+	Name        string `gorm:"column:name;"`         // 名称
+	Email       string `gorm:"column:email;"`        // 邮箱
+	Age         int32  `gorm:"column:age;"`          // 年龄
+	Grade       int32  `gorm:"column:grade;"`        // 年级编号
+	Class       int32  `gorm:"column:class;"`        // 班级编号
+	TeacherName string `gorm:"column:teacher_name;"` // 老师名称
 }
 
 // 不携带条件查询
@@ -293,5 +242,86 @@ func selectByCondition(q *query.Query) error {
 	}
 
 	//12.默认返回
+	return nil
+}
+
+// 特殊查询
+func specialSelect(q *query.Query) error {
+
+	//1.排序查询
+	if find, err := q.Student.Order(q.Student.Age.Desc(), q.Student.ID.Asc()).Find(); err != nil {
+		return err
+	} else {
+		log.Printf("get group by data:")
+		for _, group := range find {
+			log.Printf("group=[%+v]", group)
+		}
+	}
+
+	//2.偏移量查询
+	if find, err := q.Student.Order(q.Student.Age.Desc(), q.Student.ID.Asc()).Offset(2).Limit(2).Find(); err != nil {
+		return err
+	} else {
+		log.Println("get offset and limit data:")
+		for _, limitStudent := range find {
+			log.Printf("limitStudent=[%+v]", limitStudent)
+		}
+	}
+
+	//3.Group By Having查询
+	if rows, err := q.Student.
+		Select(q.Student.Age, q.Student.Age.Count().As("count")).
+		Group(q.Student.Age).
+		Having(q.Student.Age.Count().Gt(1)).
+		Rows(); err != nil {
+		return err
+	} else {
+		log.Println("get group by data:")
+		for rows.Next() {
+			var groupResult ageGroup
+			if err := rows.Scan(&groupResult.Age, &groupResult.Count); err != nil {
+				return err
+			}
+			log.Printf("group=[%+v]", groupResult)
+		}
+	}
+
+	//4.Join查询
+	s := q.Student.As("s")
+	tas := q.TeacherAndStudent.As("tas")
+	if find, err := s.
+		Select(s.ID, s.Name, s.Age, s.Grade, s.Class, s.Email, s.CreateTime, s.UpdateTime).
+		Join(tas, s.ID.EqCol(tas.StudentID)).
+		Where(tas.TeacherID.Eq(1)).
+		Order(s.ID.Desc()).
+		Find(); err != nil {
+		return err
+	} else {
+		log.Println("get join data:")
+		for _, joinStudent := range find {
+			log.Printf("joinStudent=[%+v]", joinStudent)
+		}
+	}
+
+	//5.Join查询-非DB对应结构体
+	var studentVos []*studentVo
+	s = q.Student.As("s")
+	tas = q.TeacherAndStudent.As("tas")
+	t := q.Teacher.As("t")
+	if err := s.Select(s.ID, s.Name, s.Age, s.Grade, s.Class, s.Email, t.Name.As("teacher_name")).
+		Join(tas, s.ID.EqCol(tas.StudentID)).
+		Join(t, tas.TeacherID.EqCol(t.ID)).
+		Where(t.ID.Eq(1)).
+		Order(s.ID.Desc()).
+		Scan(&studentVos); err != nil {
+		return err
+	} else {
+		log.Println("get join data:")
+		for _, studentVo := range studentVos {
+			log.Printf("studentVo=[%+v]", studentVo)
+		}
+	}
+
+	//6.默认返回
 	return nil
 }
