@@ -19,8 +19,8 @@ type Teacher struct {
 	UpdateTime time.Time `gorm:"type:datetime ON UPDATE CURRENT_TIMESTAMP;default:CURRENT_TIMESTAMP;comment:更新时间"`
 }
 
-// BeforeCreate Student创建方法钩子
-func (s *Teacher) BeforeCreate(db *gorm.DB) (err error) {
+// BeforeCreate Teacher创建方法钩子
+func (t *Teacher) BeforeCreate(db *gorm.DB) (err error) {
 
 	//1.日志打印
 	log.Println("students数据写入")
