@@ -4,6 +4,7 @@ package mysql
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -29,7 +30,19 @@ func InitDB() *gorm.DB {
 		panic("database connection error")
 	}
 
-	//3.返回数据库连接
+	//3.获取底层sql.DB
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic("get sql db connection error")
+	}
+
+	//4.设置连接池参数
+	sqlDB.SetMaxOpenConns(20)                 // 最多20个连接
+	sqlDB.SetMaxIdleConns(10)                 // 最多10个空闲连接
+	sqlDB.SetConnMaxLifetime(5 * time.Minute) // 每个连接最多用5分钟
+	sqlDB.SetConnMaxIdleTime(1 * time.Minute) // 空闲超过1分钟就关闭
+
+	//5.返回数据库连接
 	log.Printf("database connection success")
 	return db
 }
