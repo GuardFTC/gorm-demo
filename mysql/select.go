@@ -259,6 +259,7 @@ func SpecialSelect(db *gorm.DB) error {
 	db.Select("students.id,students.name,students.age,students.grade,students.class").
 		Model(&mysql.Student{}).
 		Joins("inner join teacher_and_students tas on students.id = tas.student_id").
+		Joins("inner join teachers t on t.id = tas.teacher_id").
 		Where("tas.teacher_id = ?", teacher.ID).
 		Order("students.id desc").
 		Scan(&joinStudents)
