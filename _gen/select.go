@@ -36,23 +36,6 @@ func Select(q *query.Query) error {
 	return nil
 }
 
-// ageGroup接收结果结构体
-type ageGroup struct {
-	Age   int32
-	Count int32
-}
-
-// studentVo接收结果结构体
-type studentVo struct {
-	ID          int32  `gorm:"column:id;"`           // 主键ID
-	Name        string `gorm:"column:name;"`         // 名称
-	Email       string `gorm:"column:email;"`        // 邮箱
-	Age         int32  `gorm:"column:age;"`          // 年龄
-	Grade       int32  `gorm:"column:grade;"`        // 年级编号
-	Class       int32  `gorm:"column:class;"`        // 班级编号
-	TeacherName string `gorm:"column:teacher_name;"` // 老师名称
-}
-
 // 不携带条件查询
 func selectWithoutParam(q *query.Query) error {
 
@@ -243,6 +226,23 @@ func selectByCondition(q *query.Query) error {
 
 	//12.默认返回
 	return nil
+}
+
+// ageGroup接收结果结构体
+type ageGroup struct {
+	Age   int32
+	Count int32
+}
+
+// studentVo接收结果结构体
+type studentVo struct {
+	ID          int32  `gorm:"column:id;"`           // 主键ID
+	Name        string `gorm:"column:name;"`         // 名称
+	Email       string `gorm:"column:email;"`        // 邮箱
+	Age         int32  `gorm:"column:age;"`          // 年龄
+	Grade       int32  `gorm:"column:grade;"`        // 年级编号
+	Class       int32  `gorm:"column:class;"`        // 班级编号
+	TeacherName string `gorm:"column:teacher_name;"` // 老师名称
 }
 
 // 特殊查询
