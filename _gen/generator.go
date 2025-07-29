@@ -21,6 +21,7 @@ func Generate(db *gorm.DB) {
 
 	//3.为数据库中所有表自动生成相关代码
 	generator.ApplyBasic(generator.GenerateAllTable()...)
+	//generator.ApplyBasic(generator.GenerateModel("students"))
 
 	//4.执行
 	generator.Execute()
