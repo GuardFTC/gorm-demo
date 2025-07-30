@@ -97,7 +97,7 @@ func selectByPrimaryKey(q *query.Query) error {
 	}
 
 	//2.根据主键ID查询多个数据
-	if find, err := q.Teacher.Where(q.Teacher.ID.In(1, 2)).Find(); err != nil {
+	if find, err := q.Teacher.Where(q.Teacher.ID.In([]int32{1, 2, 3}...)).Find(); err != nil {
 		return err
 	} else {
 		log.Printf("get by id data:")
@@ -230,8 +230,8 @@ func selectByCondition(q *query.Query) error {
 
 // ageGroup接收结果结构体
 type ageGroup struct {
-	Age   int32
-	Count int32
+	Age   int32 `gorm:"column:age"`
+	Count int32 `gorm:"column:count"`
 }
 
 // studentVo接收结果结构体
@@ -286,7 +286,22 @@ func specialSelect(q *query.Query) error {
 		}
 	}
 
-	//4.Join查询
+	//4.Group By Having查询
+	var groupResults []*ageGroup
+	if err := q.Student.
+		Select(q.Student.Age, q.Student.Age.Count().As("count")).
+		Group(q.Student.Age).
+		Having(q.Student.Age.Count().Gt(1)).
+		Scan(&groupResults); err != nil {
+		return err
+	} else {
+		log.Println("get group by data:")
+		for _, groupResult := range groupResults {
+			log.Printf("group=[%+v]", groupResult)
+		}
+	}
+
+	//5.Join查询
 	s := q.Student.As("s")
 	tas := q.TeacherAndStudent.As("tas")
 	if find, err := s.
@@ -303,7 +318,7 @@ func specialSelect(q *query.Query) error {
 		}
 	}
 
-	//5.Join查询-非DB对应结构体
+	//6.Join查询-非DB对应结构体
 	var studentVos []*studentVo
 	s = q.Student.As("s")
 	tas = q.TeacherAndStudent.As("tas")
@@ -322,6 +337,6 @@ func specialSelect(q *query.Query) error {
 		}
 	}
 
-	//6.默认返回
+	//7.默认返回
 	return nil
 }
